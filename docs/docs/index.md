@@ -158,8 +158,8 @@ docker load -i hello-world.tar
 
 ## 13. 容器
 
-- docker run 命令会从 image 文件，生成一个正在运行的容器实例。
-- docker container run 命令具有自动抓取 image 文件的功能。如果发现本地没有指定的 image 文件，就会从仓库自动抓取
+- `docker run` 命令会从 `image` 文件，生成一个正在运行的容器实例。
+- `docker container run` 命令具有自动抓取 image 文件的功能。如果发现本地没有指定的 image 文件，就会从仓库自动抓取
 - 输出提示以后，hello world 就会停止运行，容器自动终止。
 - 有些容器不会自动终止
 - image 文件生成的容器实例，本身也是一个文件，称为容器文件
@@ -188,138 +188,243 @@ docker load -i hello-world.tar
 | cp [containerId]     | 从正在运行的 Docker 容器里面，将文件拷贝到本机                                                                                           | docker container cp f6a53629488b:/root/root.txt .                          |
 | commit [containerId] | 根据一个现有容器创建一个新的镜像                                                                                                         | docker commit -a "zhufeng" -m "mynginx" a404c6c174a2 mynginx:v1            |
 
-docker 容器的主线程（dockfile 中 CMD 执行的命令）结束，容器会退出
-以使用交互式启动 docker run -i [CONTAINER_NAME or CONTAINER_ID]
-tty 选项 docker run -dit [CONTAINER_NAME or CONTAINER_ID]
-守护态（Daemonized）形式运行 docker run -d ubuntu /bin/sh -c "while true; do echo hello world; sleep 1; done"
+- docker 容器的主线程（dockfile 中 CMD 执行的命令）结束，容器会退出
+  - 以使用交互式启动 `docker run -i [CONTAINER_NAME or CONTAINER_ID]`
+  - tty 选项 `docker run -dit [CONTAINER_NAME or CONTAINER_ID]`
+  - 守护态（Daemonized）形式运行 `docker run -d ubuntu /bin/sh -c "while true; do echo hello world; sleep 1; done"`
 
-## 13.2 启动容器
+### 13.2 启动容器
 
+```shell
 docker run ubuntu /bin/echo "Hello world"
-docker: Docker 的二进制执行文件。
-run:与前面的 docker 组合来运行一个容器。
-ubuntu 指定要运行的镜像，Docker 首先从本地主机上查找镜像是否存在，如果不存在，Docker 就会从镜像仓库 Docker Hub 下载公共镜像。
-/bin/echo "Hello world": 在启动的容器里执行的命令
-Docker 以 ubuntu 镜像创建一个新容器，然后在容器里执行 bin/echo "Hello world"，然后输出结果
+```
 
-Docker attach 必须是登陆到一个已经运行的容器里。需要注意的是如果从这个容器中 exit 退出的话，就会导致容器停止
-参数 含义
--i --interactive 交互式
--t --tty 分配一个伪终端
--d --detach 运行容器到后台
--a --attach list 附加到运行的容器
--e --env list 设置环境变量 docker run -d -p 1010:80 -e username="zhufeng" nginx \ docker container exec -it 3695dc5b9c2d /bin/bash
--p --publish list 发布容器端口到主机
--P --publish-all
-13.3 查看容器
+- docker: Docker 的二进制执行文件。
+- run:与前面的 docker 组合来运行一个容器。
+- ubuntu 指定要运行的镜像，Docker 首先从本地主机上查找镜像是否存在，如果不存在，Docker 就会从镜像仓库 Docker Hub 下载公共镜像。
+- /bin/echo "Hello world": 在启动的容器里执行的命令
+  > Docker 以 ubuntu 镜像创建一个新容器，然后在容器里执行 bin/echo "Hello world"，然后输出结果
+  >
+  > - Docker attach 必须是登陆到一个已经运行的容器里。需要注意的是如果从这个容器中 exit 退出的话，就会导致容器停止
+
+| 参数              | 含义                                                                                                                 |
+| ----------------- | -------------------------------------------------------------------------------------------------------------------- |
+| -i --interactive  | 交互式                                                                                                               |
+| -t --tty          | 分配一个伪终端                                                                                                       |
+| -d --detach       | 运行容器到后台                                                                                                       |
+| -a --attach list  | 附加到运行的容器                                                                                                     |
+| -e --env list     | 设置环境变量 docker run -d -p 1010:80 -e username="zhufeng" nginx \ docker container exec -it 3695dc5b9c2d /bin/bash |
+| -p --publish list | 发布容器端口到主机                                                                                                   |
+| -P --publish -all |                                                                                                                      |
+
+### 13.3 查看容器
+
+```shell
 docker ps
 docker -a
 docker -l
--a 显示所有的容器，包括已停止的
--l 显示最新的那个容器
-字段 含义
-CONTAINER ID 容器 ID
-IMAGE 使用的镜像
-COMMAND 使用的命令
-CREATED 创建时间
-STATUS 状态
-PORTS 端口号
-NAMES 自动分配的名称
-13.4 运行交互式的容器
+```
+
+- -a 显示所有的容器，包括已停止的
+- -l 显示最新的那个容器
+
+| 字段         | 含义           |
+| ------------ | -------------- |
+| CONTAINER ID | 容器 ID        |
+| IMAGE        | 使用的镜像     |
+| COMMAND      | 使用的命令     |
+| CREATED      | 创建时间       |
+| STATUS       | 状态           |
+| PORTS        | 端口号         |
+| NAMES        | 自动分配的名称 |
+
+### 13.4 运行交互式的容器
+
+```shell
 docker run -i -t ubuntu /bin/bash
 exit
--t=--interactive 在新容器内指定一个伪终端或终端。
--i=--tty 允许你对容器内的标准输入 (STDIN) 进行交互。
-我们可以通过运行 exit 命令或者使用 CTRL+D 来退出容器。
+```
 
-13.5 后台运行容器
+- -t=--interactive 在新容器内指定一个伪终端或终端。
+- -i=--tty 允许你对容器内的标准输入 (STDIN) 进行交互。
+
+> 我们可以通过运行 exit 命令或者使用 CTRL+D 来退出容器。
+
+### 13.5 后台运行容器
+
+```shell
 docker run --detach centos ping www.baidu.com
 docker ps
 docker logs --follow ad04d9acde94
 docker stop ad04d9acde94
-13.6 kill
-docker kill 5a5c3a760f61
-kill 是不管容器同不同意，直接执行 kill -9，强行终止；stop 的话，首先给容器发送一个 TERM 信号，让容器做一些退出前必须的保护性、安全性操作，然后让容器自动停止运行，如果在一段时间内，容器还是没有停止，再进行 kill -9，强行终止
+```
 
-13.7 删除容器
-docker rm 删除容器
-docker rmi 删除镜像
-docker rm $(docker ps -a -q)
+### 13.6 kill
+
+```shell
+docker kill 5a5c3a760f61
+```
+
+> kill 是不管容器同不同意，直接执行 kill -9，强行终止；stop 的话，首先给容器发送一个 TERM 信号，让容器做一些退出前必须的保护性、安全性操作，然后让容器自动停止运行，如果在一段时间内，容器还是没有停止，再进行 kill -9，强行终止
+
+### 13.7 删除容器
+
+- docker rm 删除容器
+- docker rmi 删除镜像
+- docker rm $(docker ps -a -q)
+
+```shell
 docker rm 5a5c3a760f61
-13.8 启动容器
+```
+
+### 13.8 启动容器
+
+```shell
 docker start [containerId]
-13.9 停止容器
+```
+
+### 13.9 停止容器
+
+```shell
 docker stop [containerId]
-13.10 进入一个容器
+```
+
+### 13.10 进入一个容器
+
+```shell
 docker attach [containerID]
-13.11 进入一个正在运行中的容器
+```
+
+### 13.11 进入一个正在运行中的容器
+
+```shell
 docker container -exec -it [containerID] /bin/bash
-13.12 拷贝文件
+```
+
+### 13.12 拷贝文件
+
+```shell
 docker container cp [containerID]/readme.md .
-13.13 自动删除
+```
+
+### 13.13 自动删除
+
+```shell
 docker run --rm ubuntu /bin/bash
-13.14 stats
-显示容器资源使用统计
+```
+
+### 13.14 stats
+
+- 显示容器资源使用统计
+
+```shell
 docker container stats
-13.15 top
+```
+
+### 13.15 top
+
 显示一个容器运行的进程
+
+```shell
 docker container top
-13.16 update
+```
+
+### 13.16 update
+
 更新一个或多个容器配置
+
+```shell
 docker update -m 500m 6d1a25f95132
-13.17 port
+```
+
+### 13.17 port
+
 列出指定的容器的端口映射
+
+```shell
 docker run -d -p 8080:80 nginx
 docker container port containerID
-13.18 logs
-查看 docker 容器的输出
-docker logs [containerId] 14. commit 制作个性化镜像
-docker commit :从容器创建一个新的镜像。
-docker commit [OPTIONS] CONTAINER [REPOSITORY[:TAG]]
--a :提交的镜像作者
--c :使用 Dockerfile 指令来创建镜像
--m :提交时的说明文字
--p :在 commit 时，将容器暂停
-停止容器后不会自动删除这个容器，除非在启动容器的时候指定了 --rm 标志
-使用 docker ps -a 命令查看 Docker 主机上包含停止的容器在内的所有容器
-停止状态的容器的可写层仍然占用磁盘空间。要清理可以使用 docker container prune 命令
+```
+
+### 13.18 logs
+
+- 查看 docker 容器的输出
+
+```shell
+docker logs [containerId]
+```
+
+## 14. commit 制作个性化镜像
+
+- docker commit :从容器创建一个新的镜像。
+- docker commit [OPTIONS] CONTAINER [REPOSITORY[:TAG]]
+  - -a :提交的镜像作者
+  - -c :使用 Dockerfile 指令来创建镜像
+  - -m :提交时的说明文字
+  - -p :在 commit 时，将容器暂停
+- 停止容器后不会自动删除这个容器，除非在启动容器的时候指定了 --rm 标志
+- 使用 docker ps -a 命令查看 Docker 主机上包含停止的容器在内的所有容器
+- 停止状态的容器的可写层仍然占用磁盘空间。要清理可以使用 docker container prune 命令
+
+```shell
 docker container commit -m"我的 nginx" -a"zhangrenyang" 3695dc5b9c2d zhangrenyang/mynginx:v1
 docker image ls
 docker container run zhangrenyang/mynginx /bin/bash
 docker container rm b2839066c362
 docker container prune
-docker image rmi c79ef5b3f5fc 15. 制作 Dockerfile
-Docker 的镜像是用一层一层的文件组成的
-docker inspect 命令可以查看镜像或者容器
-Layers 就是镜像的层文件，只读不能修改。基于镜像创建的容器会共享这些文件层
+docker image rmi c79ef5b3f5fc
+```
+
+## 15. 制作 Dockerfile
+
+- Docker 的镜像是用一层一层的文件组成的
+- docker inspect 命令可以查看镜像或者容器
+- Layers 就是镜像的层文件，只读不能修改。基于镜像创建的容器会共享这些文件层
+
+```shell
 docker inspect centos
-15.1 编写 Dockerfile
--t --tag list 镜像名称
--f --file string 指定 Dockerfile 文件的位置
-指令 含义 示例
-FROM 构建的新镜像是基于哪个镜像 FROM centos:6
-MAINTAINER 镜像维护者姓名或邮箱地址 MAINTAINER zhufengjiagou
-RUN 构建镜像时运行的 shell 命令 RUN yum install httpd
-CMD CMD 设置容器启动后默认执行的命令及其参数，但 CMD 能够被 docker run 后面跟的命令行参数替换 CMD /usr/sbin/sshd -D
-EXPOSE 声明容器运行的服务器端口 EXPOSE 80 443
-ENV 设置容器内的环境变量 ENV MYSQL_ROOT_PASSWORD 123456
-ADD 拷贝文件或目录到镜像中，如果是 URL 或者压缩包会自动下载和解压 ADD ,ADD https://xxx.com/html.tar.gz /var/www.html, ADD html.tar.gz /var/www/html
-COPY 拷贝文件或目录到镜像 COPY ./start.sh /start.sh
-ENTRYPOINT 配置容器启动时运行的命令 ENTRYPOINT /bin/bash -c '/start.sh'
-VOLUME 指定容器挂载点到宿主自动生成的目录或其它容器 VOLUME ["/var/lib/mysql"]
-USER 为 RUN CMD 和 ENTRYPOINT 执行命令指定运行用户 USER zhufengjiagou
-WORKDIR 为 RUN CMD ENTRYPOINT COPY ADD 设置工作目录 WORKDIR /data
-HEALTHCHECK 健康检查 HEALTHCHECK --interval=5m --timeout=3s --retries=3 CMS curl -f htp://localhost
-ARG 在构建镜像时指定一些参数 ARG user
-cmd 给出的是一个容器的默认的可执行体。也就是容器启动以后，默认的执行的命令。重点就是这个"默认"。意味着，如果 docker run 没有指定任何的执行命令或者 dockerfile 里面也没有 entrypoint，那么，就会使用 cmd 指定的默认的执行命令执行。同时也从侧面说明了 entrypoint 的含义，它才是真正的容器启动以后要执行命令
-15.2 .dockerignore
+```
+
+### 15.1 编写 Dockerfile
+
+- -t --tag list 镜像名称
+- -f --file string 指定 Dockerfile 文件的位置
+
+  | 指令        | 含义                                                                                      | 示例                                                                              |
+  | ----------- | ----------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------- |
+  | FROM        | 构建的新镜像是基于哪个镜像                                                                | FROM centos:6                                                                     |
+  | MAINTAINER  | 镜像维护者姓名或邮箱地址                                                                  | MAINTAINER zhufengjiagou                                                          |
+  | RUN         | 构建镜像时运行的 shell 命令                                                               | RUN yum install httpd                                                             |
+  | CMD         | CMD 设置容器启动后默认执行的命令及其参数，但 CMD 能够被 docker run 后面跟的命令行参数替换 | CMD /usr/sbin/sshd -D                                                             |
+  | EXPOSE      | 声明容器运行的服务器端口                                                                  | EXPOSE 80 443                                                                     |
+  | ENV         | 设置容器内的环境变量                                                                      | ENV MYSQL_ROOT_PASSWORD 123456                                                    |
+  | ADD         | 拷贝文件或目录到镜像中，如果是 URL 或者压缩包会自动下载和解压                             | ADD ,ADD https://xxx.com/html.tar.gz /var/www.html, ADD html.tar.gz /var/www/html |
+  | COPY        | 拷贝文件或目录到镜像                                                                      | COPY ./start.sh /start.sh                                                         |
+  | ENTRYPOINT  | 配置容器启动时运行的命令                                                                  | ENTRYPOINT /bin/bash -c '/start.sh'                                               |
+  | VOLUME      | 指定容器挂载点到宿主自动生成的目录或其它容器                                              | VOLUME ["/var/lib/mysql"]                                                         |
+  | USER        | 为 RUN CMD 和 ENTRYPOINT 执行命令指定运行用户                                             | USER zhufengjiagou                                                                |
+  | WORKDIR     | 为 RUN CMD ENTRYPOINT COPY ADD 设置工作目录                                               | WORKDIR /data                                                                     |
+  | HEALTHCHECK | 健康检查                                                                                  | HEALTHCHECK --interval=5m --timeout=3s --retries=3 CMS curl -f htp://localhost    |
+  | ARG         | 在构建镜像时指定一些参数                                                                  | ARG user                                                                          |
+
+- cmd 给出的是一个容器的默认的可执行体。也就是容器启动以后，默认的执行的命令。重点就是这个"默认"。意味着，如果 `docker run` 没有指定任何的执行命令或者 `dockerfile` 里面也没有 `entrypoint`，那么，就会使用 cmd 指定的默认的执行命令执行。同时也从侧面说明了 entrypoint 的含义，它才是真正的容器启动以后要执行命令
+
+### 15.2 .dockerignore
+
 表示要排除，不要打包到 image 中的文件路径
 
+```.dockerignore
 .git
 node_modules
-15.3 Dockerfile
-15.3.1 安装 node
-nvm
+```
+
+### 15.3 Dockerfile
+
+#### 15.3.1 安装 node
+
+- nvm
+
+```shell
 wget -qO- https://raw.githubusercontent.com/creationix/nvm/v0.33.11/install.sh | bash
 source /root/.bashrc
 nvm install stable
@@ -327,25 +432,39 @@ node -v
 npm config set registry https://registry.npm.taobao.org
 npm i cnpm -g --registry https://registry.npm.taobao.org
 npm i nrm -g --registry https://registry.npm.taobao.org
-15.3.2 安装 express 项目生成器
+```
+
+#### 15.3.2 安装 express 项目生成器
+
+```shell
 npm install express-generator -g
 express app
-15.3.3 Dockerfile
+```
+
+#### 15.3.3 Dockerfile
+
+```txt
 FROM node
 COPY ./app /app
 WORKDIR /app
 RUN npm install
 EXPOSE 3000
-FROM 表示该镜像继承的镜像 :表示标签
-COPY 是将当前目录下的 app 目录下面的文件都拷贝到 image 里的/app 目录中
-WORKDIR 指定工作路径，类似于执行 cd 命令
-RUN npm install 在/app 目录下安装依赖，安装后的依赖也会打包到 image 目录中
-EXPOSE 暴露 3000 端口，允许外部连接这个端口
-15.4 创建 image
+```
+
+- FROM 表示该镜像继承的镜像 :表示标签
+- COPY 是将当前目录下的 app 目录下面的文件都拷贝到 image 里的/app 目录中
+- WORKDIR 指定工作路径，类似于执行 cd 命令
+- RUN npm install 在/app 目录下安装依赖，安装后的依赖也会打包到 image 目录中
+- EXPOSE 暴露 3000 端口，允许外部连接这个端口
+
+### 15.4 创建 image
+
 docker build -t express-demo .
 -t 用来指定 image 镜像的名称，后面还可以加冒号指定标签，如果不指定默认就是 latest
 . 表示 Dockerfile 文件的所有路径,.就表示当前路径
-15.5 使用新的镜像运行容器
+
+### 15.5 使用新的镜像运行容器
+
 docker container run -p 3333:3000 -it express-demo /bin/bash
 npm start
 -p 参数是将容器的 3000 端口映射为本机的 3333 端口
@@ -353,7 +472,9 @@ npm start
 express-demo image 的名称
 /bin/bash 容器启动后执行的第一个命令,这里是启动了 bash 容器以便执行脚本
 --rm 在容器终止运行后自动删除容器文件
-15.6 CMD
+
+### 15.6 CMD
+
 Dockerfile
 
 - CMD npm start
@@ -364,7 +485,9 @@ docker container run -p 3333:3000 express-demo
 RUN 命令在 image 文件的构建阶段执行，执行结果都会打包进入 image 文件；CMD 命令则是在容器启动后执行
 一个 Dockerfile 可以包含多个 RUN 命令，但是只能有一个 CMD 命令
 指定了 CMD 命令以后，docker container run 命令就不能附加命令了（比如前面的/bin/bash），否则它会覆盖 CMD 命令
-15.7 发布 image
+
+### 15.7 发布 image
+
 注册账户
 83687401 Abc
 docker tag SOURCE_IMAGE[:TAG] TARGET_IMAGE[:TAG]
