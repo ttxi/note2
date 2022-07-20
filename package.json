@@ -4,6 +4,7 @@
   "scripts": {
     "start": "dumi dev",
     "build": "dumi build",
+    "deploy": "sh deploy.sh && sh push.sh",
     "prettier": "prettier --write \"**/*.{js,jsx,tsx,ts,less,md,json}\""
   },
   "main": "dist/index.js",
