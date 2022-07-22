@@ -792,205 +792,276 @@ docker network rm myweb
 
 ## 18.compose
 
-Compose 通过一个配置文件来管理多个 Docker 容器
-在配置文件中，所有的容器通过 services 来定义，然后使用 docker-compose 脚本来启动、停止和重启应用和应用中的服务以及所有依赖服务的容器
-步骤：
-最后，运行 docker-compose up，Compose 将启动并运行整个应用程序 配置文件组成
-services 可以定义需要的服务，每个服务都有自己的名字、使用的镜像、挂载的数据卷所属的网络和依赖的其它服务
-networks 是应用的网络，在它下面可以定义使用的网络名称，类性
-volumes 是数据卷，可以在此定义数据卷，然后挂载到不同的服务上面使用
-18.1 安装 compose
+- Compose 通过一个配置文件来管理多个 Docker 容器
+- 在配置文件中，所有的容器通过 services 来定义，然后使用 docker-compose 脚本来启动、停止和重启应用和应用中的服务以及所有依赖服务的容器
+- 步骤：
+  - 最后，运行 `docker-compose up`，Compose 将启动并运行整个应用程序 配置文件组成
+  - services 可以定义需要的服务，每个服务都有自己的名字、使用的镜像、挂载的数据卷所属的网络和依赖的其它服务
+  - networks 是应用的网络，在它下面可以定义使用的网络名称，类性
+  - volumes 是数据卷，可以在此定义数据卷，然后挂载到不同的服务上面使用
+
+### 18.1 安装 compose
+
+```shell
 yum -y install epel-release
 yum -y install python-pip
 yum clean all
 pip install docker-compose
+```
+
+```shell
 sudo curl -L "https://github.com/docker/compose/releases/download/1.25.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-
 # 添加可执行权限
-
 sudo chmod +x /usr/local/bin/docker-compose
-
 # 查看版本信息
-
 docker-compose -versio
-18.2 编写 docker-compose.yml
-在 docker-compose.yml 中定义组成应用程序的服务，以便它们可以在隔离的环境中一起运行
-空格缩进表示层次
-冒号空格后面有空格
+```
+
+### 18.2 编写 docker-compose.yml
+
+- 在 `docker-compose.yml` 中定义组成应用程序的服务，以便它们可以在隔离的环境中一起运行
+- 空格缩进表示层次
+- 冒号空格后面有空格
+
 docker-compose.yml
 
+```yml
 version: '2'
 services:
-nginx1:
-image: nginx
-ports: - "8080:80"
-nginx2:
-image: nginx
-ports: - "8081:80"
-18.3 启动服务
-docker 会创建默认的网络
-命令 服务
-docker-compose up 启动所有的服务
-docker-compose up -d 后台启动所有的服务
-docker-compose ps 打印所有的容器
-docker-compose stop 停止所有服务
-docker-compose logs -f 持续跟踪日志
-docker-compose exec nginx1 bash 进入 nginx1 服务系统
-docker-compose rm nginx1 删除服务容器
-docker network ls 查看网络网络不会删除
-docker-compose down 删除所有的网络和容器
-删除所有的容器 docker container rm docker container ps -a -q
+  nginx1:
+    image: nginx
+    ports:
+      - '8080:80'
+  nginx2:
+    image: nginx
+    ports:
+      - '8081:80'
+```
 
-18.4 网络互 ping
+### 18.3 启动服务
+
+- docker 会创建默认的网络
+
+  | 命令                            | 服务                 |
+  | ------------------------------- | -------------------- |
+  | docker-compose up               | 启动所有的服务       |
+  | docker-compose up -d            | 后台启动所有的服务   |
+  | docker-compose ps               | 打印所有的容器       |
+  | docker-compose stop             | 停止所有服务         |
+  | docker-compose logs -f          | 持续跟踪日志         |
+  | docker-compose exec nginx1 bash | 进入 nginx1 服务系统 |
+  | docker-compose rm nginx1        | 删除服务容器         |
+  | docker network ls               | 查看网络网络不会删除 |
+  | docker-compose down             | 删除所有的网络和容器 |
+
+> 删除所有的容器 docker container rm docker container ps -a -q
+
+### 18.4 网络互 ping
+
+```shell
 docker-compose up -d
 docker-compose exec nginx1 bash
 apt update && apt install -y inetutils-ping #可以通过服务的名字连接到对方
 ping nginx2
-18.5 配置数据卷
-networks 指定自定义网络
-volumes 指定数据卷
-数据卷在宿主机的位置 /var/lib/docker/volumes/nginx-compose_data/\_data
+```
+
+### 18.5 配置数据卷
+
+- networks 指定自定义网络
+- volumes 指定数据卷
+- 数据卷在宿主机的位置 `/var/lib/docker/volumes/nginx-compose_data/\_data`
+
+```yml
 version: '3'
 services:
-nginx1:
-image: nginx
-ports: - "8081:80"
-networks: - "newweb"
-volumes: - "data:/data" - "./nginx1:/usr/share/nginx/html"
-nginx2:
-image: nginx
-ports: - "8082:80"
-networks: - "default"
-volumes: - "data:/data" - "./nginx2:/usr/share/nginx/html"
-nginx3:
-image: nginx
-ports: - "8083:80"
-networks: - "default" - "newweb"
-volumes: - "data:/data" - "./nginx3:/usr/share/nginx/html"
+  nginx1:
+    image: nginx
+    ports:
+      - '8081:80'
+    networks:
+      - 'newweb'
+    volumes:
+      - 'data:/data'
+      - './nginx1:/usr/share/nginx/html'
+  nginx2:
+    image: nginx
+    ports:
+      - '8082:80'
+    networks:
+      - 'default'
+    volumes:
+      - 'data:/data'
+      - './nginx2:/usr/share/nginx/html'
+  nginx3:
+    image: nginx
+    ports:
+      - '8083:80'
+    networks:
+      - 'default'
+      - 'newweb'
+    volumes:
+      - 'data:/data'
+      - './nginx3:/usr/share/nginx/html'
 networks:
-newweb:
-driver: bridge
+  newweb:
+    driver: bridge
 volumes:
-data:
-driver: local
+  data:
+    driver: local
+```
+
+```shell
 docker exec nginx-compose_nginx1_1 bash
 cd /data
 touch 1.txt
 exit
 cd /var/lib/docker/volumes/nginx-compose_data/\_data
-ls 19. node 项目
-nodeapp 是一个用 Docker 搭建的本地 Node.js 应用开发与运行环境。
-19.1 服务分类
-db：使用 mariadb 作为应用的数据库
-node：启动 node 服务
-web：使用 nginx 作为应用的 web 服务器
-19.2 app 目录结构
-文件 说明
-docker-compose.yml 定义本地开发环境需要的服务
-images/nginx/config/default.conf nginx 配置文件
-images/node/Dockerfile node 的 Dockfile 配置文件
-images/node/web/package.json 项目文件
-images/node/web/public/index.html 静态首页
-images/node/web/server.js node 服务
+ls
+```
+
+## 19. node 项目
+
+- nodeapp 是一个用 Docker 搭建的本地 Node.js 应用开发与运行环境。
+
+### 19.1 服务分类
+
+- db：使用 `mariadb` 作为应用的数据库
+- node：启动 `node` 服务
+- web：使用 `nginx` 作为应用的 web 服务器
+
+### 19.2 app 目录结构
+
+| 文件                              | 说明                       |
+| --------------------------------- | -------------------------- |
+| docker-compose.yml                | 定义本地开发环境需要的服务 |
+| images/nginx/config/default.conf  | nginx 配置文件             |
+| images/node/Dockerfile            | node 的 Dockfile 配置文件  |
+| images/node/web/package.json      | 项目文件                   |
+| images/node/web/public/index.html | 静态首页                   |
+| images/node/web/server.js         | node 服务                  |
+
+```
 ├── docker-compose.yml
 └── images
-├── nginx
-│ └── config
-│ └── default.conf
-└── node
-├── Dockerfile
-└── web
-├── package.json
-├── public
-│ └── index.html
-└── server.js
-19.2.1 docker-compose.yml
+    ├── nginx
+    │   └── config
+    │       └── default.conf
+    └── node
+        ├── Dockerfile
+        └── web
+            ├── package.json
+            ├── public
+            │   └── index.html
+            └── server.js
+```
+
+### 19.2.1 docker-compose.yml
+
+```yml
 version: '2'
 services:
-node:
-build:
-context: ./images/node
-dockerfile: Dockerfile
-depends_on:
-
-- db
+  node:
+    build:
+      context: ./images/node
+      dockerfile: Dockerfile
+    depends_on:
+      - db
   web:
-  image: nginx
-  ports:
-- "8080:80"
-  volumes:
-- ./images/nginx/config:/etc/nginx/conf.d
-- ./images/node/web/public:/public
-  depends_on:
-- node
+    image: nginx
+    ports:
+      - '8080:80'
+    volumes:
+      - ./images/nginx/config:/etc/nginx/conf.d
+      - ./images/node/web/public:/public
+    depends_on:
+      - node
   db:
-  image: mariadb
-  environment:
-  MYSQL_ROOT_PASSWORD: "root"
-  MYSQL_DATABASE: "node"
-  MYSQL_USER: "zfpx"
-  MYSQL_PASSWORD: "123456"
-  volumes:
-- db:/var/lib/mysql
-  volumes:
+    image: mariadb
+    environment:
+      MYSQL_ROOT_PASSWORD: 'root'
+      MYSQL_DATABASE: 'node'
+      MYSQL_USER: 'zfpx'
+      MYSQL_PASSWORD: '123456'
+    volumes:
+      - db:/var/lib/mysql
+volumes:
   db:
-  driver: local
-  19.2.2 server.js
-  images/node/web/server.js
+    driver: local
+```
 
-let http=require('http');
+### 19.2.2 server.js
+
+images/node/web/server.js
+
+```js
+let http = require('http');
 var mysql = require('mysql');
 var connection = mysql.createConnection({
-host : 'db',
-user : 'zfpx',
-password : '123456',
-database : 'node'
+  host: 'db',
+  user: 'zfpx',
+  password: '123456',
+  database: 'node',
 });
 
 connection.connect();
 
-let server=http.createServer(function (req,res) {
-connection.query('SELECT 2 + 2 AS solution', function (error, results, fields) {
-if (error) throw error;
-res.end(''+results[0].solution);
-});
+let server = http.createServer(function (req, res) {
+  connection.query(
+    'SELECT 2 + 2 AS solution',
+    function (error, results, fields) {
+      if (error) throw error;
+      res.end('' + results[0].solution);
+    },
+  );
 });
 server.listen(3000);
-19.2.3 package.json
+```
+
+### 19.2.3 package.json
+
 images/node/web/package.json
 
+```json
 {
-"scripts": {
-"start": "node server.js"
-},
-"dependencies": {
-"mysql": "^2.16.0"
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "mysql": "^2.16.0"
+  }
 }
-19.2.4 images/node/Dockerfile
+```
+
+### 19.2.4 images/node/Dockerfile
+
+```Dockerfile
 FROM node
 MAINTAINER zhangrenyang <zhang_renyang@126.com>
 COPY ./web /web
 WORKDIR /web
 RUN npm install
 CMD npm start
-19.2.5 images/nginx/config/default.conf
+```
+
+### 19.2.5 images/nginx/config/default.conf
+
+```conf
 upstream backend {
-server node:3000;
+    server node:3000;
 }
 server {
-listen 80;
-server_name localhost;
-root /public;
-index index.html index.htm;
+    listen 80;
+    server_name localhost;
+    root /public;
+    index index.html index.htm;
 
     location /api {
         proxy_pass http://backend;
     }
-
-} 20. 参考 #
-yaml
-mysql
-
+}
 ```
 
-```
+## 20. 参考
+
+- [yaml](http://www.ruanyifeng.com/blog/2016/07/yaml.html)
+- [mysql](https://www.npmjs.com/package/mysql)
