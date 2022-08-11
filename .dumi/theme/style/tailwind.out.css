@@ -592,6 +592,12 @@ video {
   }
 }
 
+@media (min-width: 1920px) {
+  .container {
+    max-width: 100%;
+  }
+}
+
 .features {
   background-image: radial-gradient(#f8f8f5 20%, transparent 20%);
   background-color: white;
