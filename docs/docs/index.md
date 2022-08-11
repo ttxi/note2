@@ -497,6 +497,8 @@ npm install express-generator -g
 express app
 ```
 
+##### 15.3.2.1 安装 12343421
+
 #### 15.3.3 Dockerfile
 
 ```txt
@@ -802,12 +804,18 @@ docker network rm myweb
 
 ### 18.1 安装 compose
 
+> 推荐使用方式二
+
+1. 方式一：
+
 ```shell
 yum -y install epel-release
 yum -y install python-pip
 yum clean all
 pip install docker-compose
 ```
+
+2. 方式二：
 
 ```shell
 sudo curl -L "https://github.com/docker/compose/releases/download/1.25.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
