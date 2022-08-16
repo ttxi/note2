@@ -11,7 +11,7 @@ export default ({ slugs }) => {
         <span className="px-4">{slugs[0].value}</span>
       </p>
       <ul className="max-h-[calc(100vh-360px)] overflow-y-auto px-4">
-        {slugs.map((item: any) => {
+        {slugs.slice(1).map((item: any) => {
           return (
             <li
               key={item.heading}

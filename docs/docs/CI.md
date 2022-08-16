@@ -1,4 +1,4 @@
-# CI
+# 125.9 CI jenkins
 
 ## 1.CICD
 
@@ -52,13 +52,13 @@ yum install git -y
 
 - Jenkins 是一个基于 Java 语言开发的持续构建工具平台，主要用于持续、自动的构建/测试你的软件和项目。它可以执行你预先设定好的设置和构建脚本，也可以和 Git 代码库做集成，实现自动触发和定时触发构建
 
-### 3.3.1 安装 java
+#### 3.3.1 安装 java
 
 ```shell
 yum install -y java
 ```
 
-### 3.3.2 安装 jenkins
+#### 3.3.2 安装 jenkins
 
 ```shell
 sudo wget -O /etc/yum.repos.d/jenkins.repo https://img.zhufengpeixun.com/jenkins.repo
@@ -66,13 +66,13 @@ sudo rpm --import https://img.zhufengpeixun.com/jenkins.io.key
 yum install jenkins -y
 ```
 
-### 3.2.3 启动 Jenkins
+#### 3.3.3 启动 Jenkins
 
 ```shell
  systemctl start jenkins.service
 ```
 
-### 3.3.4 开放端口
+#### 3.3.4 开放端口
 
 ```
 firewall-cmd --zone=public --add-port=8080/tcp --permanent
@@ -80,25 +80,25 @@ firewall-cmd --zone=public --add-port=50000/tcp --permanent
 systemctl reload firewalld
 ```
 
-### 3.3.5 打开浏览器访问
+#### 3.3.5 打开浏览器访问
 
 ```txt
 http://8.136.218.128:8080/ 访问之后记得先执行 3.7.7修改插件景象 在点击安装推荐插件
 ```
 
-### 3.3.6 查看密码
+#### 3.3.6 查看密码
 
 ```shell
 cat /var/lib/jenkins/secrets/initialAdminPassword
 ```
 
-### 3.3.7 修改插件镜像
+#### 3.3.7 修改插件镜像
 
 ```shell
 sed -i 's/http:\/\/updates.jenkins-ci.org\/download/https:\/\/mirrors.tuna.tsinghua.edu.cn\/jenkins/g' /var/lib/jenkins/updates/default.json && sed -i 's/http:\/\/www.google.com/https:\/\/www.baidu.com/g' /var/lib/jenkins/updates/default.json
 ```
 
-### 3.3.8 添加到 docker 用户组里
+#### 3.3.8 添加到 docker 用户组里
 
 ```shell
 sudo gpasswd -a jenkins docker  #将当前用户添加至docker用户组
@@ -106,7 +106,7 @@ newgrp docker                 #更新docker用户组
 systemctl restart jenkins.service # 重新启动jenkins
 ```
 
-### 3.3.9 新建任务
+#### 3.3.9 新建任务
 
 - http://8.136.218.128:8080/view/all/newJob
 - 新建任务=>构建一个自由风格的软件项目=>配置>增加构建步骤
@@ -116,7 +116,7 @@ docker -v
 docker pull node:latest
 ```
 
-### 3.3 安装 Nodejs
+#### 3.3.10 安装 Nodejs
 
 - 系统管理 => 插件管理 => 可选插件 => 安装 NodeJS 插件
 - 全局工具配置 => NodeJS => 新增 NodeJS 这里的 nodejs 选对版本号 不然后边会报错
@@ -132,13 +132,13 @@ Unpacking https://nodejs.org/dist/v15.11.0/node-v15.11.0-linux-x64.tar.gz to /va
 
 项目仓库
 
-### 3.4.1 生成公钥私钥
+#### 3.4.1 生成公钥私钥
 
 ```shell
 ssh-keygen -t rsa -C "zhufengnodejs@126.com"
 ```
 
-### 3.4.2 Gitee 配置公钥
+#### 3.4.2 Gitee 配置公钥
 
 设置=>安全设置 => SSH 公钥
 
@@ -146,7 +146,7 @@ ssh-keygen -t rsa -C "zhufengnodejs@126.com"
 cat ~/.ssh/id_rsa.pub
 ```
 
-### 3.4.3 在 Jenkins 配置私钥
+#### 3.4.3 在 Jenkins 配置私钥
 
 - 在 Jenkins 中，私钥/密码 等认证信息都是以 凭证 的方式管理的
 - 一定要确保先安装 git `yum install git -y`
@@ -156,7 +156,7 @@ cat ~/.ssh/id_rsa.pub
 
 ### 3.5 构建镜像
 
-### 3.5.1 编写 Dockerfile
+#### 3.5.1 编写 Dockerfile
 
 Dockerfile
 
@@ -177,7 +177,7 @@ server {
 }
 ```
 
-### 3.5.2 Jenkins 配置脚本
+#### 3.5.2 Jenkins 配置脚本
 
 构建 => 执行 Shell
 
@@ -188,7 +188,7 @@ npm run build
 docker build -t react-project .
 ```
 
-### 3.5.3 执行任务
+#### 3.5.3 执行任务
 
 ### 3.6 上传私有镜像库
 
@@ -197,7 +197,7 @@ docker build -t react-project .
 - 构建后的产物称为制品，制品则要放到制品库做中转和版本管理
 - 常用平台有 Nexus、Jfrog 和 Harbor 或其他对象存储平台
 
-### 3.6.1 部署 Nexus 服务
+#### 3.6.1 部署 Nexus 服务
 
 - nexus-3.29.0-02 是 nexus 主程序文件夹
 - sonatype-work 则是数据文件
@@ -217,7 +217,7 @@ http://8.136.218.128:8081/
 
 > nexus 还支持停止，重启等命令。可以在 bin 目录下执行 ./nexus help 查看更多命令
 
-### 3.6.2 配置 Nexus
+#### 3.6.2 配置 Nexus
 
 - 可以使用 admin 用户登录 Nexus
 - 注意请立即更改密码
@@ -227,7 +227,7 @@ http://8.136.218.128:8081/
 cat /root/sonatype-work/nexus3/admin.password
 ```
 
-### 3.6.3 创建 Docker 私服
+#### 3.6.3 创建 Docker 私服
 
 - 登录 => 齿轮图标 => Repositories => Create repository => docker(hosted) => HTTP(8082)
 
@@ -236,12 +236,12 @@ cat /root/sonatype-work/nexus3/admin.password
 - hosted：此类型制品库和 proxy 相反，原则上 只允许用户推送，不允许缓存。这里只存放自己的私有镜像或制品
 - group：此类型制品库可以将以上两种类型的制品库组合起来
 
-### 3.6.4 添加访问权限
+#### 3.6.4 添加访问权限
 
 - 齿轮图标 => Realms => Docker Bearer Token Realm => 添加到右边的 Active =>保存
 - copy http://118.190.142.109:8081/repository/dockcer-repository/
 
-### 3.6.5 登录制品库
+#### 3.6.5 登录制品库
 
 vi /etc/docker/daemon.json
 
@@ -259,7 +259,7 @@ Username: admin
 Password: 123456
 ```
 
-### 3.6.6 推送镜像到制品库
+#### 3.6.6 推送镜像到制品库
 
 - 设置界面 => 构建环境 => 勾选 Use secret text(s) or file(s) => 新增选择 => Username and password (separated)
 

@@ -1,15 +1,33 @@
 import React, { useContext, Fragment } from 'react';
-import { context } from 'dumi/theme';
+import { context, Link } from 'dumi/theme';
 import SideMenu from 'dumi-theme-default/es/components/SideMenu';
 import Navbar from 'dumi-theme-default/es/components/Navbar';
 import SearchBar from 'dumi-theme-default/es/components/SearchBar';
-import Toc from './Toc';
+import Toc from './components/Toc';
 import './style/tailwind.out.css';
+
+const Hero = (hero) => (
+  <>
+    <div className="__dumi-default-layout-hero">
+      {hero.image && <img src={hero.image} />}
+      <h1>{hero.title}</h1>
+      <div dangerouslySetInnerHTML={{ __html: hero.desc }} />
+      {hero.actions &&
+        hero.actions.map((action) => (
+          <Link to={action.link} key={action.text}>
+            <button type="button">{action.text}</button>
+          </Link>
+        ))}
+    </div>
+  </>
+);
 
 export default (props) => {
   const { meta, base } = useContext(context);
 
   const isHomePage = meta.__pathname === base;
+  const isSiteMode = true;
+  const showHero = isSiteMode && meta.hero;
 
   return (
     <div
@@ -22,7 +40,18 @@ export default (props) => {
       <div className="g-glossy-firefox" id="firefox-head-bg" />
 
       {isHomePage ? (
-        <div id="article-body">{props.children}</div>
+        <div className="__dumi-default-layout">
+          {showHero && Hero(meta.hero)}
+          <div className="__dumi-default-layout-content">
+            {props.children}
+            {showHero && meta.footer && (
+              <div
+                className="__dumi-default-layout-footer"
+                dangerouslySetInnerHTML={{ __html: meta.footer }}
+              />
+            )}
+          </div>
+        </div>
       ) : (
         <Fragment>
           <div

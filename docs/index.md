@@ -1,7 +1,7 @@
 ---
 hero:
-  title: Site Name
-  desc: dumi site app example
+  title: 一个前端
+  desc: 一个前端
   actions:
     - text: 快速开始
       link: /docs
